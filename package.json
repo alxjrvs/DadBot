@@ -1,0 +1,44 @@
+{
+	"name": "dadbot",
+	"description": "",
+	"version": "1.0.0",
+	"type": "module",
+	"private": true,
+	"keywords": [
+		"bot",
+		"discord",
+		"discord.js",
+		"robo",
+		"robo.js",
+		"typescript"
+	],
+	"scripts": {
+		"build": "robox build",
+		"deploy": "robox deploy",
+		"dev": "robox dev",
+		"doctor": "sage doctor",
+		"invite": "robox invite",
+		"lint": "bun lint:eslint && bun lint:style",
+		"lint:eslint": "eslint -c config/eslint.ts .",
+		"lint:style": "prettier --write .",
+		"start": "robox start",
+		"upgrade": "sage upgrade"
+	},
+	"dependencies": {
+		"@types/luxon": "^3.4.2",
+		"discord.js": "^14.16.3",
+		"extensionless": "^1.9.9",
+		"luxon": "^3.5.0",
+		"robo.js": "^0.10.29"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.17.0",
+		"@swc/core": "^1.10.1",
+		"@types/node": "^22.10.2",
+		"eslint": "9",
+		"globals": "^15.14.0",
+		"prettier": "^3.4.2",
+		"typescript": "^5.7.2",
+		"typescript-eslint": "^8.18.2"
+	}
+}
