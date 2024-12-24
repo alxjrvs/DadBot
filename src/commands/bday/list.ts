@@ -15,9 +15,11 @@ export default (interaction: ChatInputCommandInteraction): CommandResult => {
 	const state = new BirthdayState(interaction.guild)
 	const content =
 		state.list
-			.map(([userId, date]) => {
-				const user = interaction?.guild?.members.cache.get(userId)
-				return `${user?.nickname ?? userId} - ${date}`
+			.map(([date, userIds], index) => {
+				if (index === 0) {
+					return `**${date} - ${userIds}**\n`
+				}
+				return `${date} - ${userIds}`
 			})
 			.join('\n') || 'No Birthdays Registered! Use `/bday add` to add one!'
 	interaction.reply({ content, ephemeral: true })

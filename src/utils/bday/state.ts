@@ -1,50 +1,58 @@
 import { State } from 'robo.js'
 import { DateTime } from 'luxon'
-import { Guild } from 'discord.js'
-
-function onlyUnique(value: string, index: number, array: string[]) {
-	return array.indexOf(value) === index
-}
+import { Guild, User } from 'discord.js'
 
 export class BirthdayState {
 	constructor(public guild: Guild) {}
 
 	isValidDate(date: string) {
-		return this.parseDate(date).isValid
+		return this.parseDateString(date).isValid
 	}
 
-	parseDate(date: string) {
-		return DateTime.fromFormat(date, 'M/dd/yyyy')
+	parseDateString(date: string) {
+		return DateTime.fromFormat(date, 'M/d/yyyy')
 	}
 
-	delete(user: string) {
+	formatToShortform(date: string) {
+		return this.parseDateString(date).toFormat('MMM dd')
+	}
+
+	delete(user: User) {
 		const newList = this.rawList
 
-		delete newList[user]
+		delete newList[user.id]
 		this.state.setState(BirthdayState.ListKey, JSON.stringify(newList), { persist: true })
 	}
 
-	has(user: string) {
-		return !!this.rawList[user]
+	has(user: User) {
+		return !!this.rawList[user.id]
 	}
 
-	set(userId: string, date: string) {
+	set(user: User, date: string) {
 		const newList = {
 			...this.rawList,
-			[userId]: date
+			[user.id]: date
 		}
 
 		this.state.setState(BirthdayState.ListKey, JSON.stringify(newList), { persist: true })
 	}
 
-	get list(): [string, string][] {
-		return Object.entries(this.rawList).map(([userId, date]) => [
-			userId,
-			DateTime.fromFormat(String(date), 'M/dd/yyyy').toFormat('MMMM d')
-		])
+	get list() {
+		return Object.entries(this.listByDate()).sort(([a], [b]) => {
+			return DateTime.fromFormat(a, 'MMM dd') < DateTime.fromFormat(b, 'MMM dd') ? -1 : 1
+		})
 	}
 
-	get rawList(): Record<string, string[]> {
+	private listByDate() {
+		return Object.entries(this.rawList).reduce((acc: Record<string, string[]>, [userId, date]) => {
+			const dateKey = this.formatToShortform(date)
+			const currentDate = acc[dateKey] || []
+			acc[dateKey] = [...currentDate, userId]
+			return acc
+		}, {})
+	}
+
+	get rawList(): Record<string, string> {
 		return JSON.parse(this.state.getState(BirthdayState.ListKey) || '{}')
 	}
 

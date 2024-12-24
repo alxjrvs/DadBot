@@ -1,4 +1,4 @@
-import type { ChatInputCommandInteraction } from 'discord.js'
+import type { ChatInputCommandInteraction, User } from 'discord.js'
 import type { CommandConfig, CommandOptions, CommandResult } from 'robo.js'
 import { BirthdayState } from '~/utils/bday/state'
 
@@ -21,7 +21,8 @@ export const config: CommandConfig = {
 }
 
 export default (interaction: ChatInputCommandInteraction, options: CommandOptions<typeof config>): CommandResult => {
-	const { user, date } = options
+	const date = options.date
+	const user = options.user as User | undefined
 	if (!user) {
 		interaction.reply({ content: 'Invalid User', ephemeral: true })
 		return
@@ -40,6 +41,15 @@ export default (interaction: ChatInputCommandInteraction, options: CommandOption
 	if (!state.isValidDate(date)) {
 		interaction.reply({ content: `#${date}# is not a valid date of format MM/DD/YYYY`, ephemeral: true })
 		return
+	}
+
+	const settingOwnUser = user.id === interaction.user.id
+
+	if (state.has(user) && !settingOwnUser) {
+		interaction.reply({
+			content: `Birthday already registered for ${user}. Consider using \`/delete\`.`,
+			ephemeral: true
+		})
 	}
 
 	state.set(user, date)
