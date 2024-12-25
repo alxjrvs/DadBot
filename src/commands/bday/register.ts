@@ -21,6 +21,14 @@ export default (interaction: ChatInputCommandInteraction): CommandResult => {
 	}
 
 	const state = new BirthdayState(interaction.guild)
+	if (state.channelId) {
+		interaction.reply({
+			content: 'Birthday Channel already set!',
+			ephemeral: true
+		})
+		return
+	}
+
 	state.setChannelId(interaction.channel.id)
 	const content = `Birthday Announcements will now arrive in ${interaction.channel}!`
 	interaction.reply({ content, ephemeral: true })
