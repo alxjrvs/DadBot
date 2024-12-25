@@ -14,8 +14,6 @@ export default (client: Client) => {
 				return
 			}
 
-			console.log('channel Registered')
-
 			await client.channels.fetch(state.channelId)
 
 			const channel = client.channels.cache.get(state.channelId)
@@ -23,15 +21,12 @@ export default (client: Client) => {
 			if (!channel || !channel.isSendable()) {
 				return
 			}
-			console.log('channel valid')
 
 			const birthdaysToday = state.birthdaysToday
-			console.log(birthdaysToday)
 
 			if (birthdaysToday.length === 0) {
 				return
 			}
-			console.log('Reaching the loop')
 
 			await guild.members.fetch()
 
