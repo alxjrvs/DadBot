@@ -52,7 +52,7 @@ export class BirthdayState {
 
 	get list() {
 		return Object.entries(this.listByDate).sort(([a], [b]) => {
-			return DateTime.fromFormat(a, 'MMM dd') < DateTime.fromFormat(b, 'MMM dd') ? -1 : 1
+			return DateTime.fromFormat(a, 'MMM dd') > DateTime.fromFormat(b, 'MMM dd') ? -1 : 1
 		})
 	}
 
