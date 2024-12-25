@@ -2,6 +2,7 @@ import { State } from 'robo.js'
 import { DateTime } from 'luxon'
 import { Guild, User } from 'discord.js'
 
+const { getState, setState } = State.fork(`dadbot-birthday-list`, { persist: true })
 export class BirthdayState {
 	constructor(public guild: Guild) {}
 
@@ -21,7 +22,7 @@ export class BirthdayState {
 		const newList = this.rawList
 
 		delete newList[user.id]
-		this.state.setState(BirthdayState.ListKey, JSON.stringify(newList), { persist: true })
+		setState(this.ListKey, JSON.stringify(newList), { persist: true })
 	}
 
 	has(user: User) {
@@ -34,15 +35,15 @@ export class BirthdayState {
 			[user.id]: date
 		}
 
-		this.state.setState(BirthdayState.ListKey, JSON.stringify(newList), { persist: true })
+		setState(this.ListKey, JSON.stringify(newList), { persist: true })
 	}
 
 	setChannelId(channelId: string) {
-		this.state.setState(BirthdayState.ChannelKey, channelId, { persist: true })
+		setState(this.ChannelKey, channelId, { persist: true })
 	}
 
 	get channelId() {
-		return this.state.getState(BirthdayState.ChannelKey)
+		return getState(this.ChannelKey)
 	}
 
 	get channel() {
@@ -50,17 +51,17 @@ export class BirthdayState {
 	}
 
 	get list() {
-		return Object.entries(this.listByDate()).sort(([a], [b]) => {
+		return Object.entries(this.listByDate).sort(([a], [b]) => {
 			return DateTime.fromFormat(a, 'MMM dd') < DateTime.fromFormat(b, 'MMM dd') ? -1 : 1
 		})
 	}
 
 	get birthdaysToday() {
 		const dateKey = this.formatToShortform(DateTime.now().toFormat('M/d/yyyy'))
-		return this.listByDate()[dateKey] || []
+		return this.listByDate[dateKey] || []
 	}
 
-	private listByDate() {
+	private get listByDate() {
 		return Object.entries(this.rawList).reduce((acc: Record<string, string[]>, [userId, date]) => {
 			const dateKey = this.formatToShortform(date)
 			const currentDate = acc[dateKey] || []
@@ -70,13 +71,13 @@ export class BirthdayState {
 	}
 
 	get rawList(): Record<string, string> {
-		return JSON.parse(this.state.getState(BirthdayState.ListKey) || '{}')
+		return JSON.parse(getState(this.ListKey) || '{}')
 	}
 
-	get state() {
-		return State.fork(`birthday-${this.guild.id}`)
+	private get ListKey() {
+		return `@dadbot-birthday-list${this.guild.id}`
 	}
-
-	static ListKey: '@dadbot-birthday-list'
-	static ChannelKey: '@dadbot-birthday-channel'
+	private get ChannelKey() {
+		return `@dadbot-birthday-channel#${this.guild.id}`
+	}
 }

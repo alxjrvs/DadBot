@@ -48,8 +48,10 @@ export default (interaction: ChatInputCommandInteraction, options: CommandOption
 	if (state.has(user) && !settingOwnUser) {
 		interaction.reply({
 			content: `Birthday already registered for ${user}. Consider using \`/delete\`.`,
+
 			ephemeral: true
 		})
+		return
 	}
 
 	state.set(user, date)
