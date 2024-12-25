@@ -3,7 +3,7 @@ import { CommandConfig, CommandOptions, CommandResult } from 'robo.js'
 import { BirthdayState } from '~/utils/bday/state'
 
 export const config: CommandConfig = {
-	description: 'Add a Birthday to the GREAT BDAY REPOSITORY',
+	description: 'Remove a Birthday from the GREAT BDAY REPOSITORY',
 	options: [
 		{
 			name: 'user',

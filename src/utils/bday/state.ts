@@ -37,10 +37,27 @@ export class BirthdayState {
 		this.state.setState(BirthdayState.ListKey, JSON.stringify(newList), { persist: true })
 	}
 
+	setChannelId(channelId: string) {
+		this.state.setState(BirthdayState.ChannelKey, channelId, { persist: true })
+	}
+
+	get channelId() {
+		return this.state.getState(BirthdayState.ChannelKey)
+	}
+
+	get channel() {
+		return this.channelId ? this.guild.channels.cache.get(this.channelId) : null
+	}
+
 	get list() {
 		return Object.entries(this.listByDate()).sort(([a], [b]) => {
 			return DateTime.fromFormat(a, 'MMM dd') < DateTime.fromFormat(b, 'MMM dd') ? -1 : 1
 		})
+	}
+
+	get birthdaysToday() {
+		const dateKey = this.formatToShortform(DateTime.now().toFormat('M/d/yyyy'))
+		return this.listByDate()[dateKey] || []
 	}
 
 	private listByDate() {
@@ -61,4 +78,5 @@ export class BirthdayState {
 	}
 
 	static ListKey: '@dadbot-birthday-list'
+	static ChannelKey: '@dadbot-birthday-channel'
 }
