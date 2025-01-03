@@ -4,9 +4,16 @@ import { BirthdayState } from '~/utils/bday/state'
 
 const EVERY_DAY_AT_10AM = '0 10 * * *'
 const EVERY_5_SECONDS = '*/5 * * * * *'
+const FORTNIGHTLY = '0 0 */14 * *'
 
 export default (client: Client) => {
-	return Cron(EVERY_DAY_AT_10AM, () => {
+	Cron(FORTNIGHTLY, () => {
+		client.guilds.cache.forEach(async (guild) => {
+			guild.systemChannel?.send('@post_madone Moisturize. Moisturize. Moisturize.')
+		})
+	})
+
+	Cron(EVERY_DAY_AT_10AM, () => {
 		client.guilds.cache.forEach(async (guild) => {
 			const state = new BirthdayState(guild)
 
